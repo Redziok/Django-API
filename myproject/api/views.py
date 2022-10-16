@@ -4,6 +4,7 @@ from rest_framework.decorators import api_view
 from base.models import Authors
 from .serializers import AuthorsSerializer
 
+# AUTHORS REQUESTS
 @api_view(['GET'])
 def getAuthors(request):
     authors = Authors.objects.all()
