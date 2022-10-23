@@ -3,12 +3,15 @@ from . import views
 
 urlpatterns = [
     path('authors/', views.getAuthors),
+    path('users/', views.getUsers),
 
     path('authors/add/', views.addAuthor),
 
-    path('<str:pk>/', views.getAuthor),
+    path('authors/<str:pk>/', views.getAuthor),
+    path('users/<str:pk>/', views.getUser),
 
-    path('update/<str:pk>/', views.updateAuthor),
+    path('authors/update/<str:pk>/', views.updateAuthor),
 
-    path('delete/<str:pk>/', views.deleteAuthor),
+    path('authors/delete/<str:pk>/', views.deleteAuthor),
+    path('users/delete/<str:pk>/', views.deleteUser),
 ]

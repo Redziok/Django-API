@@ -1,6 +1,6 @@
-from .views import RegisterAPI
+from .views import UserController
 from django.urls import path
 
 urlpatterns = [
-    path('', RegisterAPI.as_view(), name='register'),
+    path('', UserController.as_view(), name='register'),
 ]
