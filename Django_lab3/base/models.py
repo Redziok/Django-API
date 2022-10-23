@@ -22,3 +22,6 @@ class Persons(models.Model):
 
     class Meta:
         ordering = ["nazwisko"]
+
+    def __str__(self):
+        return self.imie + " " + self.nazwisko
