@@ -1,48 +1,43 @@
-from rest_framework import generics
+from rest_framework import status
 from rest_framework.response import Response
-from .serializers import AuthorSerializer
+from rest_framework.decorators import api_view
 from base.models import Authors
+from .serializers import AuthorSerializer
 
+# AUTHORS REQUESTS
+@api_view(['GET'])
+def getAuthors(request):
+    authors = Authors.objects.all()
+    serializer = AuthorSerializer(authors, many=True)
+    return Response(serializer.data)
 
-# Register API
-class AuthorController(generics.GenericAPIView):
-    serializer_class = AuthorSerializer
+@api_view(['GET'])
+def getAuthor(request, pk):
+    author = Authors.objects.get(id=pk)
+    serializer = AuthorSerializer(author, many=False)
+    return Response(serializer.data)
 
-    def get(self, request):
-        authors = Authors.objects.all()
-        serializer = AuthorSerializer(authors, many=True)
-        return Response({
-            "author": serializer.data
-        })
+@api_view(['POST'])
+def addAuthor(request):
+    serializer = AuthorSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'Successfully added Author to database'},status.HTTP_201_CREATED)
+    else:
+        return Response({'Failed to add Author to database'},status.HTTP_400_BAD_REQUEST)
 
-    def post(self, request):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        author = serializer.save()
-        return Response({
-            "author": AuthorSerializer(author, context=self.get_serializer_context()).data
-        })
+@api_view(['PUT'])
+def updateAuthor(request, pk):
+    author = Authors.objects.get(id=pk)
+    serializer = AuthorSerializer(author, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'Successfully updated Author'},status.HTTP_201_CREATED)
+    else:
+        return Response({'Failed to update Author'},status.HTTP_400_BAD_REQUEST)
 
-    def put(self, request):
-        if request.data.get('id') is not None:
-            author = Authors.objects.get(pk=request.data.get('id'))
-            if author:
-                serializer = AuthorSerializer(author, data=request.data)
-
-                if serializer.is_valid():
-                    serializer.save()
-                    return Response({
-                        'success': True,
-                        'message': 'APIView: updated blog post',
-                        "author": serializer.data
-                    })
-
-    def delete(self, request):
-        if request.data.get('id') is not None:
-            author = Authors.objects.get(pk=request.data.get('id'))
-            if author:
-                author.delete()
-                return Response({
-                    'success': True,
-                    'message': 'Successfully deleted Author'
-                })
+@api_view(['DELETE'])
+def deleteAuthor(request, pk):
+    authors = Authors.objects.get(id=pk)
+    authors.delete()
+    return Response({'Author successfully deleted'}, status.HTTP_204_NO_CONTENT)

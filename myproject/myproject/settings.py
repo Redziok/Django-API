@@ -42,6 +42,9 @@ INSTALLED_APPS = [
     'knox',
     'base',
     'accounts',
+    'authors',
+    'books',
+    'ratings',
 ]
 
 MIDDLEWARE = [

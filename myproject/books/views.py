@@ -1,48 +1,47 @@
-from rest_framework import generics
+from rest_framework import status
 from rest_framework.response import Response
-from .serializers import BookSerializer
+from rest_framework.decorators import api_view
 from base.models import Books
+from .serializers import BookAddSerializer, BookSerializer
 
+def to_representation(self, instance):
+    rep = super(BookSerializer, self).to_representation(instance)
+    rep['author'] = instance.author
+    return rep
+    
+@api_view(['GET'])
+def getBooks(request):
+    books = Books.objects.all()
+    serializer = BookSerializer(books, many=True)
+    return Response(serializer.data)
 
-# Register API
-class BookController(generics.GenericAPIView):
-    serializer_class = BookSerializer
+@api_view(['GET'])
+def getBook(request, pk):
+    book = Books.objects.get(id=pk)
+    serializer = BookSerializer(book, many=False)
+    return Response(serializer.data)
 
-    def get(self, request):
-        books = Books.objects.all()
-        serializer = BookSerializer(books, many=True)
-        return Response({
-            "book": serializer.data
-        })
+@api_view(['POST'])
+def addBook(request):
+    serializer = BookAddSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'Successfully added Book to database'},status.HTTP_201_CREATED)
+    else:
+        return Response({'Failed to add Book to database'},status.HTTP_400_BAD_REQUEST)
 
-    def post(self, request):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        book = serializer.save()
-        return Response({
-            "book": BookSerializer(book, context=self.get_serializer_context()).data
-        })
+@api_view(['PUT'])
+def updateBook(request, pk):
+    book = Books.objects.get(id=pk)
+    serializer = BookAddSerializer(book, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'Successfully updated Book'},status.HTTP_201_CREATED)
+    else:
+        return Response({'Failed to update Book'},status.HTTP_400_BAD_REQUEST)
 
-    def put(self, request):
-        if request.data.get('id') is not None:
-            book = Books.objects.get(pk=request.data.get('id'))
-            if book:
-                serializer = BookSerializer(book, data=request.data)
-
-                if serializer.is_valid():
-                    serializer.save()
-                    return Response({
-                        'success': True,
-                        'message': 'APIView: updated blog post',
-                        "book": serializer.data
-                    })
-
-    def delete(self, request):
-        if request.data.get('id') is not None:
-            book = Books.objects.get(pk=request.data.get('id'))
-            if book:
-                book.delete()
-                return Response({
-                    'success': True,
-                    'message': 'Successfully deleted Books'
-                })
+@api_view(['DELETE'])
+def deleteBook(request, pk):
+    books = Books.objects.get(id=pk)
+    books.delete()
+    return Response({'Book successfully deleted'}, status.HTTP_204_NO_CONTENT)

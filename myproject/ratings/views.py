@@ -1,48 +1,48 @@
-from rest_framework import generics
+from rest_framework import status
 from rest_framework.response import Response
-from .serializers import RatingSerializer
+from rest_framework.decorators import api_view
 from base.models import Ratings
+from .serializers import RatingAddSerializer, RatingSerializer
 
+@api_view(['GET'])
+def getRatings(request):
+    ratings = Ratings.objects.all()
+    serializer = RatingSerializer(ratings, many=True)
+    return Response(serializer.data)
 
-# Register API
-class RatingController(generics.GenericAPIView):
-    serializer_class = RatingSerializer
+@api_view(['GET'])
+def getRating(request, pk):
+    rating = Ratings.objects.get(id=pk)
+    serializer = RatingSerializer(rating, many=False)
+    return Response(serializer.data)
 
-    def get(self, request):
-        ratings = Ratings.objects.all()
-        serializer = RatingSerializer(ratings, many=True)
-        return Response({
-            "rating": serializer.data
-        })
+@api_view(['POST'])
+def addRating(request):
+    book = request.data['book']
+    User = request.data['User']
+    serializer = RatingAddSerializer(data=request.data)
+    if serializer.is_valid():
+        check_exist = Ratings.objects.filter(book=book) and Ratings.objects.filter(User=User).exists()
+        if check_exist: 
+            return Response({'User already rated this book'},status.HTTP_400_BAD_REQUEST)
+        else:
+            serializer.save()
+        return Response({'Successfully added Rating to database'},status.HTTP_201_CREATED)
+    else:
+        return Response({'Failed to add Rating to database'},status.HTTP_400_BAD_REQUEST)
 
-    def post(self, request):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        rating = serializer.save()
-        return Response({
-            "rating": RatingSerializer(rating, context=self.get_serializer_context()).data
-        })
+@api_view(['PUT'])
+def updateRating(request, pk):
+    rating = Ratings.objects.get(id=pk)
+    serializer = RatingSerializer(rating, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'Successfully updated Rating'},status.HTTP_201_CREATED)
+    else:
+        return Response({'Failed to update Rating'},status.HTTP_400_BAD_REQUEST)
 
-    def put(self, request):
-        if request.data.get('id') is not None:
-            rating = Ratings.objects.get(pk=request.data.get('id'))
-            if rating:
-                serializer = RatingSerializer(rating, data=request.data)
-
-                if serializer.is_valid():
-                    serializer.save()
-                    return Response({
-                        'success': True,
-                        'message': 'APIView: updated blog post',
-                        "rating": serializer.data
-                    })
-
-    def delete(self, request):
-        if request.data.get('id') is not None:
-            rating = Ratings.objects.get(pk=request.data.get('id'))
-            if rating:
-                rating.delete()
-                return Response({
-                    'success': True,
-                    'message': 'Successfully deleted Rating'
-                })
+@api_view(['DELETE'])
+def deleteRating(request, pk):
+    ratings = Ratings.objects.get(id=pk)
+    ratings.delete()
+    return Response({'Rating successfully deleted'}, status.HTTP_204_NO_CONTENT)

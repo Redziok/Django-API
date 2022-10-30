@@ -1,6 +1,11 @@
-from .views import BookController
 from django.urls import path
+from . import views
 
 urlpatterns = [
-    path('', BookController.as_view(), name='book'),
+    path('', views.getBooks),
+    path('add', views.addBook),
+
+    path('<str:pk>', views.getBook),
+    path('update/<str:pk>', views.updateBook),
+    path('delete/<str:pk>', views.deleteBook),
 ]
