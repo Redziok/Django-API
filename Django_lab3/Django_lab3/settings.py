@@ -79,15 +79,11 @@ WSGI_APPLICATION = 'Django_lab3.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'lab_project',
         'USER': 'postgres',
-        'PASSWORD': 'redziok',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
-        }
+        'PASSWORD': 'Redziok',
+        'HOST': 'localhost'
     }
 }
 
