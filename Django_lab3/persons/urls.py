@@ -1,6 +1,8 @@
-from .views import UserController
 from django.urls import path
+from . import views
 
 urlpatterns = [
-    path('', UserController.as_view(), name='register'),
+    path('', views.getPersons),
+    path('<str:pk>', views.personDetail),
+    path('contain/<str:string>', views.personGetContain),
 ]
