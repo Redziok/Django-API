@@ -1,9 +1,13 @@
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import permissions
 from base.models import Persons
+
+from .permissions import IsOwnerOrReadOnly
 from .serializers import PersonSerializer
-from django.http import Http404
 
 @api_view(['GET','POST'])
 def getPersons(request):
@@ -20,7 +24,7 @@ def getPersons(request):
         else:
             return Response({'Failed to add Person to database'}, status.HTTP_400_BAD_REQUEST)
 
-@api_view(['GET', 'PUT', 'DELETE'])
+@api_view(['GET'])
 def personDetail(request, pk):
     try:
         person = Persons.objects.get(id=pk)
@@ -28,10 +32,19 @@ def personDetail(request, pk):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = PersonSerializer(person, many=False)
+        serializer = PersonSerializer(person)
         return Response(serializer.data)
+@api_view(['PUT', 'DELETE'])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def personUpdateDelete(request, pk):
+    try:
+        permission_classes = [permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly]
+        person = Persons.objects.get(id=pk)
+    except Persons.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
-    elif request.method == 'PUT':
+    if request.method == 'PUT':
         serializer = PersonSerializer(person, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -50,6 +63,9 @@ def personGetContain(request, string):
     if personContain is not None:
         persons = persons.filter(imie=string)
     return persons
+
+def perform_create(self, serializer):
+    serializer.save(owner=self.request.user)
 
 
 

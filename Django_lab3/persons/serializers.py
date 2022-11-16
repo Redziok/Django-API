@@ -2,10 +2,11 @@ from rest_framework import serializers
 from base.models import Persons
 
 class PersonSerializer(serializers.Serializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
 
     class Meta:
         model = Persons
-        fields = ['imie', 'nazwisko', 'miesiac_urodzenia', 'Drużyna']
+        fields = ['imie', 'nazwisko', 'miesiac_urodzenia', 'Drużyna', 'owner']
 
     def create(self, validated_data):
         return Persons.objects.create(**validated_data)
