@@ -1,24 +1,27 @@
-from rest_framework import status
+from django.shortcuts import get_object_or_404
+from rest_framework import status, permissions
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
 from knox.models import AuthToken
 from .serializers import UserAddSerializer, UserSerializer
 
 @api_view(['GET'])
-def getUsers(request):
+def Get_Users(request):
     users = User.objects.all()
     serializer = UserSerializer(users, many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
-def getUser(request, pk):
-    user = User.objects.get(id=pk)
+def Get_User(request, pk):
+    user = get_object_or_404(User, id=pk)
     serializer = UserSerializer(user, many=False)
     return Response(serializer.data)
 
 @api_view(['POST'])
-def addUser(request):
+def Add_User(request):
     serializer = UserAddSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()
@@ -29,24 +32,11 @@ def addUser(request):
     else:
         return Response({'Failed to add User to database'},status.HTTP_400_BAD_REQUEST)
 
-@api_view(['PUT'])
-def updateUser(request, pk):
-    users = User.objects.get(id=pk)
-    serializer = UserAddSerializer(users, data=request.data)
-    if serializer.is_valid():
-        user = serializer.save()
-        password = AuthToken.objects.create(user)[1]
-        user.password = password
-        return Response({
-        "user": UserSerializer(user, context=UserAddSerializer.context).data,
-        "token": AuthToken.objects.create(user)[1]
-    })
-    else:
-        return Response({'Failed to update User'},status.HTTP_400_BAD_REQUEST)
-
 @api_view(['DELETE'])
-def deleteUser(request, pk):
-    user = User.objects.get(id=pk)
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated, permissions])
+def Delete_User(request, pk):
+    user = get_object_or_404(User, id=pk)
     if user.is_superuser==True: 
         return Response({"Can't delete superuser"},status.HTTP_400_BAD_REQUEST)
     else:

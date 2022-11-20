@@ -1,7 +1,10 @@
-from rest_framework import status
+from django.shortcuts import get_object_or_404
+from rest_framework import status, permissions
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
-from base.models import Books
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
+from base.models import Book
 from .serializers import BookAddSerializer, BookSerializer
 
 def to_representation(self, instance):
@@ -10,19 +13,19 @@ def to_representation(self, instance):
     return rep
     
 @api_view(['GET'])
-def getBooks(request):
-    books = Books.objects.all()
+def Get_Books(request):
+    books = Book.objects.all()
     serializer = BookSerializer(books, many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
-def getBook(request, pk):
-    book = Books.objects.get(id=pk)
+def Get_Book(request, pk):
+    book = get_object_or_404(Book, id=pk)
     serializer = BookSerializer(book, many=False)
     return Response(serializer.data)
 
 @api_view(['POST'])
-def addBook(request):
+def Add_Book(request):
     serializer = BookAddSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -31,8 +34,8 @@ def addBook(request):
         return Response({'Failed to add Book to database'},status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT'])
-def updateBook(request, pk):
-    book = Books.objects.get(id=pk)
+def Update_Book(request, pk):
+    book = get_object_or_404(Book, id=pk)
     serializer = BookAddSerializer(book, data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -41,7 +44,9 @@ def updateBook(request, pk):
         return Response({'Failed to update Book'},status.HTTP_400_BAD_REQUEST)
 
 @api_view(['DELETE'])
-def deleteBook(request, pk):
-    books = Books.objects.get(id=pk)
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated, permissions.IsAdminUser])
+def Delete_Book(request, pk):
+    books = get_object_or_404(Book, id=pk)
     books.delete()
     return Response({'Book successfully deleted'}, status.HTTP_204_NO_CONTENT)

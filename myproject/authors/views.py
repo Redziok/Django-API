@@ -1,24 +1,27 @@
-from rest_framework import status
+from django.shortcuts import get_object_or_404
+from rest_framework import status, permissions
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
-from base.models import Authors
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
+from base.models import Author
 from .serializers import AuthorSerializer
 
 # AUTHORS REQUESTS
 @api_view(['GET'])
-def getAuthors(request):
-    authors = Authors.objects.all()
+def Get_Authors(request):
+    authors = Author.objects.all()
     serializer = AuthorSerializer(authors, many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
-def getAuthor(request, pk):
-    author = Authors.objects.get(id=pk)
+def Get_Author(request, pk):
+    author = get_object_or_404(Author, id=pk)
     serializer = AuthorSerializer(author, many=False)
     return Response(serializer.data)
 
 @api_view(['POST'])
-def addAuthor(request):
+def Add_Author(request):
     serializer = AuthorSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -27,8 +30,8 @@ def addAuthor(request):
         return Response({'Failed to add Author to database'},status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT'])
-def updateAuthor(request, pk):
-    author = Authors.objects.get(id=pk)
+def Update_Author(request, pk):
+    author = get_object_or_404(Author, id=pk)
     serializer = AuthorSerializer(author, data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -37,7 +40,9 @@ def updateAuthor(request, pk):
         return Response({'Failed to update Author'},status.HTTP_400_BAD_REQUEST)
 
 @api_view(['DELETE'])
-def deleteAuthor(request, pk):
-    authors = Authors.objects.get(id=pk)
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated, permissions.IsAdminUser])
+def Delete_Author(request, pk):
+    authors = get_object_or_404(Author, id=pk)
     authors.delete()
     return Response({'Author successfully deleted'}, status.HTTP_204_NO_CONTENT)

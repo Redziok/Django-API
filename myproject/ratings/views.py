@@ -1,28 +1,31 @@
-from rest_framework import status
+from django.shortcuts import get_object_or_404
+from rest_framework import status, permissions
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
-from base.models import Ratings
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
+from base.models import Rating
 from .serializers import RatingAddSerializer, RatingSerializer
 
 @api_view(['GET'])
-def getRatings(request):
-    ratings = Ratings.objects.all()
+def Get_Ratings(request):
+    ratings = Rating.objects.all()
     serializer = RatingSerializer(ratings, many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
-def getRating(request, pk):
-    rating = Ratings.objects.get(id=pk)
+def Get_Rating(request, pk):
+    rating = get_object_or_404(Rating, id=pk)
     serializer = RatingSerializer(rating, many=False)
     return Response(serializer.data)
 
 @api_view(['POST'])
-def addRating(request):
+def Add_Rating(request):
     book = request.data['book']
     User = request.data['User']
     serializer = RatingAddSerializer(data=request.data)
     if serializer.is_valid():
-        check_exist = Ratings.objects.filter(book=book) and Ratings.objects.filter(User=User).exists()
+        check_exist = Rating.objects.filter(book=book) and Rating.objects.filter(User=User).exists()
         if check_exist: 
             return Response({'User already rated this book'},status.HTTP_400_BAD_REQUEST)
         else:
@@ -32,8 +35,8 @@ def addRating(request):
         return Response({'Failed to add Rating to database'},status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT'])
-def updateRating(request, pk):
-    rating = Ratings.objects.get(id=pk)
+def Update_Rating(request, pk):
+    rating = get_object_or_404(Rating, id=pk)
     serializer = RatingSerializer(rating, data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -42,7 +45,12 @@ def updateRating(request, pk):
         return Response({'Failed to update Rating'},status.HTTP_400_BAD_REQUEST)
 
 @api_view(['DELETE'])
-def deleteRating(request, pk):
-    ratings = Ratings.objects.get(id=pk)
-    ratings.delete()
-    return Response({'Rating successfully deleted'}, status.HTTP_204_NO_CONTENT)
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def Delete_Rating(request, pk):
+    ratings = get_object_or_404(Rating, id=pk)
+    if ratings.User.id == request.user.id:
+        ratings.delete()
+        return Response({'Rating successfully deleted'}, status.HTTP_204_NO_CONTENT)
+    else:
+        return Response({"Can't remove someone else's rating"}, status.HTTP_204_NO_CONTENT)

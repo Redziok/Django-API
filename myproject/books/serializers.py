@@ -1,14 +1,14 @@
 from rest_framework import serializers
-from base.models import Books
+from base.models import Book
 
 # User Serializer
 class BookSerializer(serializers.ModelSerializer):
     author = serializers.StringRelatedField()
     class Meta:
-        model = Books
+        model = Book
         fields = '__all__'
 
 class BookAddSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Books
+        model = Book
         fields = '__all__'
