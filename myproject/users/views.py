@@ -32,6 +32,18 @@ def Add_User(request):
     else:
         return Response({'Failed to add User to database'},status.HTTP_400_BAD_REQUEST)
 
+@api_view(['PUT'])
+def Update_User(request, pk):
+    author = get_object_or_404(User, id=pk)
+    serializer = UserAddSerializer(author, data=request.data)
+    if serializer.is_valid():
+        user = serializer.save()
+        user.set_password(user.password)
+        user.save()
+        return Response({'Successfully updated User'},status.HTTP_201_CREATED)
+    else:
+        return Response({'Failed to update User'},status.HTTP_400_BAD_REQUEST)
+
 @api_view(['DELETE'])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated, permissions])

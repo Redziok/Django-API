@@ -7,4 +7,5 @@ urlpatterns = [
 
     path('<str:pk>', views.Get_User),
     path('delete/<str:pk>', views.Delete_User),
+    path('update/<str:pk>', views.Update_User),
 ]
