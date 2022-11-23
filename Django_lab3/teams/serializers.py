@@ -1,14 +1,14 @@
 from rest_framework import serializers
-from base.models import Druzyna
+from base.models import Team
 
-class DruzynaSerializer(serializers.ModelSerializer):
+class TeamSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Druzyna
+        model = Team
         fields = '__all__'
         allow_null = ['kraj']
 
     def create(self, validated_data):
-        return Druzyna.objects.create(**validated_data)
+        return Team.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
         instance.nazwa = validated_data.get('nazwa', instance.nazwa)

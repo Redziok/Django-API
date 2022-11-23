@@ -37,11 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'base',
     'rest_framework',
+    'rest_framework.authtoken'
     'knox',
+    'base',
     'persons',
-    'druzyny',
+    'teams',
 ]
 
 MIDDLEWARE = [
@@ -82,10 +83,10 @@ WSGI_APPLICATION = 'Django_lab3.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'lab_project',
-        'USER': 'postgres',
-        'PASSWORD': 'Redziok',
-        'HOST': 'localhost'
+        'NAME': 'app_www_db',
+        'USER': 'app_www_db_user',
+        'PASSWORD': 'MBiJ1j68plRQFIu1v2QFUTnEQTMCGJEl',
+        'HOST': 'dpg-cdv0ta82i3mkk8apvil0-a.frankfurt-postgres.render.com'
     }
 }
 

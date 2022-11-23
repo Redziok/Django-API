@@ -1,18 +1,19 @@
-from rest_framework import status
+from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
-from rest_framework import permissions
-from base.models import Persons
+from rest_framework.authtoken.models import Token
+from base.models import Person
 
 from .permissions import IsOwnerOrReadOnly
 from .serializers import PersonSerializer
 
-@api_view(['GET','POST'])
-def getPersons(request):
+
+@api_view(['GET', 'POST'])
+def get_person(request):
     if request.method == 'GET':
-        persons = Persons.objects.all()
+        persons = Person.objects.all()
         serializer = PersonSerializer(persons, many=True)
         return Response(serializer.data)
 
@@ -24,24 +25,31 @@ def getPersons(request):
         else:
             return Response({'Failed to add Person to database'}, status.HTTP_400_BAD_REQUEST)
 
+
 @api_view(['GET'])
-def personDetail(request, pk):
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def person_detail(request, pk):
     try:
-        person = Persons.objects.get(id=pk)
-    except Persons.DoesNotExist:
+        person = Person.objects.get(id=pk)
+    except Person.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = PersonSerializer(person)
-        return Response(serializer.data)
-@api_view(['PUT', 'DELETE'])
+        if person.owner.id == request.user.id:
+            serializer = PersonSerializer(person)
+            return Response(serializer.data)
+        else:
+            return Response({"You're not the owner"}, status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['PUT'])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
-@permission_classes([IsAuthenticated])
-def personUpdateDelete(request, pk):
+@permission_classes([permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly])
+def person_update(request, pk):
     try:
-        permission_classes = [permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly]
-        person = Persons.objects.get(id=pk)
-    except Persons.DoesNotExist:
+        person = Person.objects.get(id=pk)
+    except Person.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'PUT':
@@ -52,27 +60,35 @@ def personUpdateDelete(request, pk):
         else:
             return Response({'Failed to update Person'}, status.HTTP_400_BAD_REQUEST)
 
-    elif request.method == 'DELETE':
+
+@api_view(['DELETE'])
+def person_delete(request, pk):
+    try:
+        person = Person.objects.get(id=pk)
+    except Person.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'DELETE':
         person.delete()
         return Response({'Person successfully deleted'}, status.HTTP_204_NO_CONTENT)
 
+
 @api_view(['GET'])
-def personGetContain(request, string):
-    persons = Persons.objects.all()
+def person_get_contain(request, string):
+    persons = Person.objects.all()
     personContain = request.query_params.get(string)
     if personContain is not None:
         persons = persons.filter(imie=string)
     return persons
 
+
 def perform_create(self, serializer):
     serializer.save(owner=self.request.user)
-
-
 
 # class PersonController(generics.GenericAPIView):
 #
 #     def get(self, request):
-#         persons = Persons.objects.all()
+#         persons = Person.objects.all()
 #         serializer = PersonSerializer(persons, many=True)
 #         return Response({
 #             "person": serializer.data
@@ -86,12 +102,12 @@ def perform_create(self, serializer):
 #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 #
 #     def getObject(self, request, pk):
-#         person = Persons.objects.get(id=pk)
+#         person = Person.objects.get(id=pk)
 #         serializer = PersonSerializer(person)
 #         return Response(serializer.data)
 #
 #     def put(self, request, pk):
-#         person = Persons.objects.get(id=pk)
+#         person = Person.objects.get(id=pk)
 #         serializer = PersonSerializer(person, data=request.data)
 #         if serializer.is_valid():
 #             serializer.save()
@@ -103,9 +119,9 @@ def perform_create(self, serializer):
 #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 #
 #     def delete(self, request, pk):
-#         person = Persons.objects.get(id=pk)
+#         person = Person.objects.get(id=pk)
 #         person.delete()
 #         return Response({
 #             'success': True,
-#             'message': 'Successfully deleted Persons'
+#             'message': 'Successfully deleted Person'
 #         })

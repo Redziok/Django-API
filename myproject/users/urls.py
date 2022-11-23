@@ -2,10 +2,10 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.Get_Users),
-    path('add', views.Add_User),
+    path('', views.get_users),
+    path('add', views.add_user),
 
-    path('<str:pk>', views.Get_User),
-    path('delete/<str:pk>', views.Delete_User),
-    path('update/<str:pk>', views.Update_User),
+    path('<str:pk>', views.get_user),
+    path('delete/<str:pk>', views.delete_user),
+    path('update/<str:pk>', views.update_user),
 ]

@@ -1,18 +1,19 @@
-from email.policy import default
-from random import choices
+from django.contrib.auth.models import User
 from django.db import models
-from pygments.lexers import get_lexer_by_name
-from pygments.formatters.html import HtmlFormatter
-from pygments import highlight
+from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
 
-class Druzyna(models.Model):
+
+class Team(models.Model):
     nazwa = models.CharField(max_length=50)
     kraj = models.CharField(max_length=2)
 
     def __str__(self):
         return self.nazwa
 
-class Persons(models.Model):
+class Person(models.Model):
 
     miesiace = models.IntegerChoices('miesiace', 'Styczeń Luty Marzec Kwiecień Maj Czerwiec Lipiec Sierpień Wrzesień Październik Listopad Grudzień')
 
@@ -20,9 +21,8 @@ class Persons(models.Model):
     nazwisko = models.CharField(max_length=50)
     miesiac_urodzenia = models.IntegerField(choices=miesiace.choices, default = '1')
     data_dodania = models.DateField(auto_now_add=True)
-    Drużyna = models.ForeignKey(Druzyna, on_delete=models.SET_NULL, null = True)
-    owner = models.ForeignKey('auth.User', related_name='persons', on_delete=models.CASCADE)
-    highlighted = models.TextField()
+    Drużyna = models.ForeignKey(Team, on_delete=models.SET_NULL, null = True)
+    owner = models.ForeignKey(User, related_name='persons', on_delete=models.CASCADE)
 
     class Meta:
         ordering = ["nazwisko"]
@@ -30,12 +30,8 @@ class Persons(models.Model):
     def __str__(self):
         return self.imie + " " + self.nazwisko
 
-    def save(self, *args, **kwargs):
-        imie = self.imie
-        nazwisko = self.nazwisko
-        miesiac_urodzenia = self.miesiac_urodzenia
-        formatter = HtmlFormatter(style=self.style, nazwisko=nazwisko,
-                                  full=True, **miesiac_urodzenia)
-        self.highlighted = highlight(self.code, imie, formatter)
-        super().save(*args, **kwargs)
+    @receiver(post_save, sender=settings.AUTH_USER_MODEL)
+    def create_auth_token(sender, instance=None, created=False, **kwargs):
+        if created:
+            Token.objects.create(user=instance)
 
