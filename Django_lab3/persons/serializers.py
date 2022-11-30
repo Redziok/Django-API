@@ -1,15 +1,17 @@
 from rest_framework import serializers
 from base.models import Person, Team
 
-class PersonSerializer(serializers.Serializer):
+class PersonSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(required=True)
     imie = serializers.CharField(required=True)
     nazwisko = serializers.CharField(required=True)
     miesiac_urodzenia = serializers.ChoiceField(choices=Person.miesiace)
+    Drużyna = serializers.CharField(source='Drużyna.nazwa')
     owner = serializers.ReadOnlyField(source='owner.username')
+
     class Meta:
         model = Person
-        fields = ['imie', 'nazwisko', 'miesiac_urodzenia', 'Drużyna', 'owner']
+        fields = ['id' ,'imie', 'nazwisko', 'miesiac_urodzenia', 'Drużyna', 'owner']
 
     def create(self, validated_data):
         return Person.objects.create(**validated_data)

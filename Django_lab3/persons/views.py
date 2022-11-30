@@ -1,12 +1,11 @@
+from django.contrib.auth.decorators import permission_required
 from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.authtoken.models import Token
-from base.models import Person
-
-from .permissions import IsOwnerOrReadOnly
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
+from rest_framework.permissions import IsAuthenticated, BasePermission
+from base.models import Person, Team
+from .permissions import view_person, can_view_other_persons
 from .serializers import PersonSerializer
 
 
@@ -28,7 +27,7 @@ def get_person(request):
 
 @api_view(['GET'])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
-@permission_classes([IsAuthenticated])
+@permission_classes([can_view_other_persons])
 def person_detail(request, pk):
     try:
         person = Person.objects.get(id=pk)
@@ -36,16 +35,13 @@ def person_detail(request, pk):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        if person.owner.id == request.user.id:
-            serializer = PersonSerializer(person)
-            return Response(serializer.data)
-        else:
-            return Response({"You're not the owner"}, status.HTTP_400_BAD_REQUEST)
+        serializer = PersonSerializer(person)
+        return Response(serializer.data)
 
 
 @api_view(['PUT'])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
-@permission_classes([permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly])
+@permission_classes([permissions.IsAuthenticatedOrReadOnly])
 def person_update(request, pk):
     try:
         person = Person.objects.get(id=pk)
@@ -62,6 +58,8 @@ def person_update(request, pk):
 
 
 @api_view(['DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def person_delete(request, pk):
     try:
         person = Person.objects.get(id=pk)
@@ -84,6 +82,19 @@ def person_get_contain(request, string):
 
 def perform_create(self, serializer):
     serializer.save(owner=self.request.user)
+
+
+@api_view(['GET'])
+def get_person_by_team_id(request, pk):
+    try:
+        Team.objects.get(id=pk)
+    except Team.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        person = Person.objects.filter(Drużyna=pk)
+        serializer = PersonSerializer(person, many=True)
+        return Response(serializer.data)
 
 # class PersonController(generics.GenericAPIView):
 #
