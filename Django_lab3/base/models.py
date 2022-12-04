@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User
 from django.db import models
-from rest_framework.authtoken.models import Token
 
 
 class Team(models.Model):
@@ -19,7 +18,7 @@ class Person(models.Model):
     miesiac_urodzenia = models.IntegerField(choices=miesiace.choices, default = '1')
     data_dodania = models.DateField(auto_now_add=True)
     Drużyna = models.ForeignKey(Team, on_delete=models.SET_NULL, null = True)
-    owner = models.ForeignKey(User, related_name='persons', on_delete=models.CASCADE)
+    owner = models.ForeignKey(User, related_name='persons', on_delete=models.SET_NULL, null=True)
 
     class Meta:
         ordering = ["nazwisko"]
