@@ -4,31 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be35bed7-a3e3-43fa-9831-63e815f07996" name="Changes" comment="lab05">
-      <change beforePath="$PROJECT_DIR$/.idea/app_www.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/app_www.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="be35bed7-a3e3-43fa-9831-63e815f07996" name="Changes" comment="lab07">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Django_lab3/Django_lab3/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/Django_lab3/Django_lab3/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Django_lab3/Django_lab3/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/Django_lab3/Django_lab3/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Django_lab3/base/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/Django_lab3/base/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Django_lab3/base/migrations/0001_initial.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Django_lab3/base/migrations/0002_persons_miesiac_urodzenia.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Django_lab3/base/migrations/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/Django_lab3/teams/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Django_lab3/base/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/Django_lab3/base/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Django_lab3/druzyny/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Django_lab3/druzyny/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/Django_lab3/teams/serializers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Django_lab3/druzyny/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/Django_lab3/teams/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Django_lab3/druzyny/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Django_lab3/teams/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Django_lab3/persons/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/Django_lab3/persons/serializers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Django_lab3/persons/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/Django_lab3/persons/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Django_lab3/persons/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Django_lab3/persons/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/myproject/authors/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/myproject/authors/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/myproject/authors/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/myproject/authors/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/myproject/books/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/myproject/books/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/myproject/books/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/myproject/books/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/myproject/myproject/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/myproject/myproject/settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/myproject/ratings/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/myproject/ratings/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/myproject/ratings/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/myproject/ratings/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/myproject/users/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/myproject/users/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/myproject/users/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/myproject/users/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -87,7 +71,9 @@
       <workItem from="1666780363541" duration="6321000" />
       <workItem from="1668598932321" duration="3247000" />
       <workItem from="1668607782802" duration="7000" />
-      <workItem from="1669203876331" duration="7107000" />
+      <workItem from="1669203876331" duration="7134000" />
+      <workItem from="1669808270787" duration="6621000" />
+      <workItem from="1670412855997" duration="6649000" />
     </task>
     <task id="LOCAL-00001" summary="lab05">
       <created>1667997820771</created>
@@ -96,7 +82,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667997820771</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="lab07">
+      <created>1669211102435</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1669211102435</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -115,6 +108,17 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="lab05" />
-    <option name="LAST_COMMIT_MESSAGE" value="lab05" />
+    <MESSAGE value="lab07" />
+    <option name="LAST_COMMIT_MESSAGE" value="lab07" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/myproject/books/urls.py</url>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

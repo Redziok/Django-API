@@ -1,3 +1,4 @@
+from django.db.models import Avg, F
 from django.shortcuts import get_object_or_404
 from rest_framework import status, permissions
 from rest_framework.response import Response
@@ -58,3 +59,10 @@ def delete_rating(request, pk):
         return Response({'Rating successfully deleted'}, status.HTTP_204_NO_CONTENT)
     else:
         return Response({"Can't remove someone else's rating"}, status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET'])
+def get_book_by_rating(request, book_amount):
+    ratings = Rating.objects.annotate(title=F('book__title')).values('title').annotate(avg_rating=Avg("bookRating")).order_by('-avg_rating')[:book_amount]
+
+    return Response(ratings)

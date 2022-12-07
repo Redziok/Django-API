@@ -51,7 +51,7 @@ def update_user(request, pk):
 
 @api_view(['DELETE'])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
-@permission_classes([IsAuthenticated, permissions.isAdminUser])
+@permission_classes([IsAuthenticated, permissions.IsAdminUser])
 def delete_user(request, pk):
     user = get_object_or_404(User, id=pk)
     if user.is_superuser == True:

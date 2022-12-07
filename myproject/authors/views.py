@@ -51,3 +51,10 @@ def delete_author(request, pk):
     authors = get_object_or_404(Author, id=pk)
     authors.delete()
     return Response({'Author successfully deleted'}, status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET'])
+def get_author_by_date(request, year):
+    authors = Author.objects.filter(dateOfBirth__range=[year+"-01-01", "2022-12-31"])
+    serializer = AuthorSerializer(authors, many=True)
+    return Response(serializer.data)

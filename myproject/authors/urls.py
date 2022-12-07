@@ -8,4 +8,5 @@ urlpatterns = [
     path('<str:pk>', views.get_author),
     path('update/<str:pk>', views.update_author),
     path('delete/<str:pk>', views.delete_author),
+    path('getbydate/<str:year>', views.get_author_by_date),
 ]

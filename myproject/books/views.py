@@ -56,3 +56,21 @@ def delete_book(request, pk):
     books = get_object_or_404(Book, id=pk)
     books.delete()
     return Response({'Book successfully deleted'}, status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET'])
+def get_book_by_title(request, title_contains):
+    books = Book.objects.filter(title__iregex=title_contains)
+    serializer = BookSerializer(books, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def get_book_by_author(request, author_contains):
+    books = Book.objects.filter(author__name__iregex=author_contains) | Book.objects.filter(
+        author__surname__iregex=author_contains)
+    serializer = BookSerializer(books, many=True)
+    return Response(serializer.data)
+
+
+
